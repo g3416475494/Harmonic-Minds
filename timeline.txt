@@ -1,0 +1,17 @@
+# 段落名: lyrical / playful / intense / meditative / blank
+0,blank
+16,meditative
+48,lyrical
+80,playful
+112,lyrical
+144,intense
+196,playful
+228,lyrical
+259,intense
+281,meditative
+291,intense
+363,playful
+378,meditative
+413,blank
+END_TIME=422
+TRANSITION_SEC=2
