@@ -111,7 +111,7 @@ Four characteristic dramatic states emerge:
 
 Higher-order states progress from **Monochrome Convergence → Dual-Color Convergence → Multicolor Interweaving → Open Dispersion**, with particles alternating between *Approach* and *Compact / Dispersed* configurations.
 
-> ![Live particle visualization and state contrast grid](docs/img/06_visualization.png)
+> ![Live particle visualization and state contrast grid](06_visualization.png)
 
 ---
 
