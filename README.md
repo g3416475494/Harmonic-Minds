@@ -91,7 +91,7 @@ Each segment requires 3 recording sessions, named `{segment}-1.csv`, `{segment}-
 
 ```
 Raw EEG  ──▶  Feature Extraction  ──▶  Visual Output
-(2 channels)   (band power,           Motion · Coherence ·
+(14 channels)   (band power,           Motion · Coherence ·
                attention, emotion,    Complexity · Attraction
                mutual resonance)      ── control parameters ──▶ particle field
 ```
@@ -218,7 +218,7 @@ Higher-order states progress from **Monochrome Convergence → Dual-Color Conver
 
 ![Page 4 — Visualization: Between Two Minds & State Contrast](docs/04_visualization.png)
 
-![Page 5 — Demo / Results / Conclusion](docs/05_demo.png)
+![Page 5 — Demo / Results / Conclusion](docs/05_demo.jpeg)
 
 ---
 
@@ -241,13 +241,3 @@ Project 01 · 2026
 *Brain · Sound · Particle · Human*
 
 ---
-
-## Image Index (for `docs/img/`)
-
-| File | Content |
-|---|---|
-| `01_research.png` | Page 1 — Research: Background & Case Study |
-| `02_features.png` | Page 2 — EEG Feature Layer, Mapping Pipeline, Visualization, Prototype States |
-| `03_technology.png` | Page 3 — Technology: CVAE Architecture & User Journey |
-| `04_visualization.png` | Page 4 — Visualization: Between Two Minds & State Contrast |
-| `05_demo.png` | Page 5 — Demo / Results / Conclusion |
