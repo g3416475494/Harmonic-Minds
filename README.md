@@ -43,12 +43,15 @@ Traditional performance practice has three persistent gaps:
 
 The system is built on established open-source toolchains and references prior EEG artworks.
 
-| Layer | Tools / Works | Notes |
+| Type | Project | Notes |
 |---|---|---|
 | Hardware | **OpenBCI** | Multimodal physiological signals; lower cost than clinical devices; suitable for EEG-driven music, VR neurofeedback, and artistic prototyping |
 | Software | **MNE-Python** | Data import / filtering / artifact removal / time-frequency analysis / online real-time processing; supports offline dataset parsing |
-| Academic | FractalBrain (CHI-EA '24), BrainiBeats (CHI-EA '23) | Fractal visuals/audio driven by attention/stress/relaxation; collaborative dual-person EEG music with 5 parameters: pitch, duration, interval, intensity, timbre |
-| Artistic | *Melting Memories* (Refik Anadol), *Csound's Brain* (NIME '26), *Neurorecital* (Nicolas Namoradze) | Memory-retrieval data sculpture; θ/α/β/γ band power mapped to SATB harmony; live piano with synchronized EEG-driven concert visualization |
+| Academic | **FractalBrain** (CHI-EA '24) | Fractal visuals and audio driven by attention / stress / relaxation metrics; VR imagery with real-time synthesized audio |
+| Academic | **BrainiBeats** (CHI-EA '23) | Collaborative dual-person EEG-generated music; 5 main parameters extracted from EEG: pitch, duration, interval, intensity, timbre |
+| Artistic | ***Melting Memories*** (Refik Anadol) | Collects EEG data from cognitive-neuroscience experiments; records brain activity associated with episodic memory retrieval |
+| Artistic | ***Csound's Brain*** (NIME '26) | Treats EEG as a performance instrument; extracts θ/α/β/γ band power and maps them onto SATB harmony and melody |
+| Artistic | ***Neurorecital*** (Nicolas Namoradze) | Live piano performance with synchronized EEG-driven visuals; lets the audience visually perceive the performer's inner neural and emotional activity |
 
 ### Requirements
 
@@ -106,7 +109,7 @@ Apply artifact removal (**ICA filtering**) to remove eye blinks, facial muscle a
 
 Three derived visual dimensions:
 
-- **Thinking Intensity** — front-central β power → flow width / particle speed
+- **Thinking Intensity** — `β / α` ratio → flow width / particle speed
 - **Emotion Intensity** — (β + θ) / α → color brightness
 - **Attention Immersion** — θ / β → flow curvature
 - **Mutual Resonance** — `½(1 + Pearson r)` between the two performers → emitter spacing / shared-field interaction
@@ -218,6 +221,29 @@ Higher-order states progress from **Monochrome Convergence → Dual-Color Conver
 
 ![Page 4 — Visualization: Between Two Minds & State Contrast](docs/04_visualization.png)
 
+---
+
+## 01 | Live Performance Demo
+
+The full system is deployed as a two-performer ensemble: both musicians wear OpenBCI headsets while playing, their 14-channel EEG streams are preprocessed online (ICA artifact removal, band-power extraction), and the CVAE generates a simulated partner stream that is blended with the live signal. The combined data drives a shared particle field projected onto a stage screen — magenta for Performer A, cyan for Performer B — visible to both performers and the audience.
+
+### Running the Full Pipeline
+
+The output `generated_csv/full_performance.csv` feeds the real-time particle renderer via LSL, producing the live visual score.
+
+---
+
+## 02 | Conclusion & Future Work
+
+**Harmonizing Minds** closes the loop between neural activity, musical performance, and stage imagery: hidden mental states of two performers are made visible as a shared particle field, giving the audience an empathetic window into the moment-to-moment dialogue on stage. The CVAE-based generative model lets one performer be simulated, enabling bidirectional mind-to-mind exchange even when only one human is present.
+
+Next steps:
+
+- Scale from two performers to small ensemble EEG interaction
+- Add closed-loop audio synthesis so particle motion feeds back into the music
+- Conduct audience perception studies on whether the visualization enhances emotional engagement
+- Publish the open-source CVAE EEG generation toolkit for other BCI-performance researchers
+
 ![Page 5 — Demo / Results / Conclusion](docs/05_demo.jpeg)
 
 ---
@@ -237,7 +263,3 @@ Higher-order states progress from **Monochrome Convergence → Dual-Color Conver
 
 **Li Ruichen** — Hunan University
 Project 01 · 2026
-
-*Brain · Sound · Particle · Human*
-
----
