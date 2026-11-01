@@ -7,12 +7,9 @@
 
 **Harmonizing Minds** is a real-time audiovisual performance system that translates the neural activity of two performers into a shared particle field. The technical core is a **Conditional VAE (CVAE)** that learns band-power distributions per musical mood (Lyrical / Playful / Intense / Meditative) and simulates a partner brainwave stream in real time.
 
-- **MUSIC** · **PARTICLE** · **HUMAN**
-- Project 01, 2026 · Li Ruichen, Hunan University
-
 ---
 
-![Page 0 — Research: Background & Case Study](docs/00_hero.jpeg)
+![Page 0 — Hero: Harmonizing Minds title](docs/00_hero.jpeg)
 
 ## 01 | Background
 
@@ -101,6 +98,17 @@ Raw EEG  ──▶  Feature Extraction  ──▶  Visual Output
                mutual resonance)      ── control parameters ──▶ particle field
 ```
 
+### Visual Output — Why Particles as a Visual Language?
+
+Particles were chosen because their **geometry** naturally mirrors two familiar musical primitives — the **note head** and the **audio waveform** — but their **motion** can carry what a rigid waveform cannot: a feeling of inner mental state made visible. A particle field is:
+
+- **Fluid** — continuous and flowing, like attention itself
+- **Real-time** — responds frame-by-frame to live EEG shifts
+- **Uncertain** — stochastic, never repeating, mirroring the ambiguity of emotion
+- **Boundless** — can spread, converge, or disperse without a fixed form
+
+![Visual output rationale — why particles as visual language](docs/03a_visual_output.png)
+
 ### Preprocessing
 
 Apply artifact removal (**ICA filtering**) to remove eye blinks, facial muscle artifacts, and other noise from the raw signal. Export cleaned data as standard CSV into the `data/` directory.
@@ -109,12 +117,20 @@ Apply artifact removal (**ICA filtering**) to remove eye blinks, facial muscle a
 
 ## 03 | Visualization
 
-Three derived visual dimensions:
+### Mapping EEG Metrics to Particle Parameters
 
-- **Thinking Intensity** — `β / α` ratio → flow width / particle speed
-- **Emotion Intensity** — (β + θ) / α → color brightness
-- **Attention Immersion** — θ / β → flow curvature
-- **Mutual Resonance** — `½(1 + Pearson r)` between the two performers → emitter spacing / shared-field interaction
+Two simulated EEG streams (Stream A / Stream B, each carrying α/β/θ power) are combined through **relational metrics with exponential smoothing** (τ ≈ 0.45 s), then mapped to four particle-engine parameters:
+
+| EEG Metric | Particle Parameter | Formula |
+|---|---|---|
+| **Emotion** | Color Intensity (Red / Blue) | `(β + θ) / α` |
+| **Immersion** | Source Count | `θ / β` |
+| **Mutual Resonance** | Emitter Separation | `½(1 + Pearson r)` between A and B |
+| **Thinking** | Motion Rate | `β / α` |
+
+The resulting particle field feeds back as **visual feedback** to both performers and the audience, closing the brain-to-screen loop.
+
+![Mapping diagram — simulated streams → relational metrics → shared particle field](docs/03b_mapping_diagram.png)
 
 ### Train Models
 
@@ -265,3 +281,5 @@ Next steps:
 
 **Li Ruichen** — Hunan University
 Project 01 · 2026
+
+*Brain · Sound · Particle · Human*
