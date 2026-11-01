@@ -12,6 +12,8 @@
 
 ---
 
+![Page 0 — Research: Background & Case Study](docs/00_hero.jpeg)
+
 ## 01 | Background
 
 Traditional performance practice has three persistent gaps:
@@ -144,7 +146,7 @@ python run.py --infer --segment lyrical  --duration 120
 
 Generated CSV files are saved in the `generated_csv/` directory.
 
-![Page 2 — EEG Feature Layer, Mapping Pipeline, Visualization & Prototype States](docs/02_features.png)
+![Page 2 — EEG Feature Layer, Mapping Pipeline, Visualization & Prototype States](docs/02_features.jpeg)
 
 ---
 
@@ -219,7 +221,7 @@ Four characteristic dramatic states emerge:
 
 Higher-order states progress from **Monochrome Convergence → Dual-Color Convergence → Multicolor Interweaving → Open Dispersion**, with particles alternating between *Approach* and *Compact / Dispersed* configurations.
 
-![Page 4 — Visualization: Between Two Minds & State Contrast](docs/04_visualization.png)
+![Page 4 — Visualization: Between Two Minds & State Contrast](docs/04_visualization.jpeg)
 
 ---
 
