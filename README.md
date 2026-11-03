@@ -61,6 +61,14 @@ Not every band is usable on a live stage. The exploration deck marks two bands a
 - **α Alpha — retained (✓):** relaxation, soothing effect, calm immersion; rendered as soft halos and low-speed animation.
 - **β Beta — retained (✓):** focused, intense, high cognitive load, difficult performance; rendered as quick lines.
 
+### Data Format
+
+Raw data is CSV, one row per **0.5 second**, containing 5 band-power values:
+
+```csv
+timestamp,time_s,Theta,Alpha,LowBeta,HighBeta,Gamma
+```
+
 Each segment requires 3 recording sessions, named `{segment}-1.csv`, `{segment}-2.csv`, `{segment}-3.csv`, placed in the `data/` directory.
 
 ---
@@ -141,6 +149,8 @@ Two simulated EEG streams (Stream A / Stream B, each carrying α/β/θ power) ar
 
 The resulting particle field feeds back as **visual feedback** to both performers and the audience, closing the brain-to-screen loop.
 
+---
+
 ## 06 | Prototype States
 
 ### Resonance × Mentation State Grid
@@ -189,6 +199,10 @@ z (20) ──FC+ReLU──▶ 20 ──FC+Sigmoid──▶ 400 ──FC+ReLU─�
 
 The stage overview shows the shared particle field projected onto a large concert-hall screen, visible to both performers and the audience.
 
+---
+
+## 08 | Implementation & Configuration
+
 ### Project Structure
 
 ```
@@ -200,7 +214,7 @@ The stage overview shows the shared particle field projected onto a large concer
 │   ├── dataset.py          # Data loading
 │   ├── model.py            # CVAE model
 │   ├── train.py            # Training logic
-│   └── inference.py         # Inference generation
+│   └── inference.py        # Inference generation
 ├── data/                   # Raw collected data (CSV)
 ├── checkpoints/            # Trained model weights
 └── generated_csv/          # Generated simulated signals
@@ -213,14 +227,6 @@ The stage overview shows the shared particle field projected onto a large concer
 
 ```bash
 pip install torch pandas numpy
-```
-
-### Data Format
-
-Raw data is CSV, one row per **0.5 second**, containing 5 band-power values:
-
-```csv
-timestamp,time_s,Theta,Alpha,LowBeta,HighBeta,Gamma
 ```
 
 ### Train Models
@@ -248,8 +254,6 @@ python run.py --infer --segment lyrical  --duration 120
 ```
 
 Generated CSV files are saved in the `generated_csv/` directory.
-
----
 
 ### Concatenate Full Performance
 
@@ -280,7 +284,7 @@ Available segment names: `prelude`, `lyrical`, `playful`, `intense`, `meditative
 
 ---
 
-## 08 | User Journey
+## 09 | User Journey
 
 1. **Training AI** — Acquire EEG data from live performances to train a CVAE model that simulates a human performer's mental state in real time.
 2. **Performer Side** — A real-time particle display lets performers see each other's mental state and adjust their playing to achieve mutual neural rapport.
@@ -291,7 +295,7 @@ Available segment names: `prelude`, `lyrical`, `playful`, `intense`, `meditative
 
 ---
 
-## 09 | Between Two Minds
+## 10 | Between Two Minds
 
 Two EEG streams (Performer A = magenta, Performer B = cyan) feed a shared particle field. Relative metrics — activation, stability, state difference `D`, and similarity `1 − D` — are exponentially smoothed (τ ≈ 0.45 s) and drive emitter speed, curl noise, emitter separation, and shared-field interaction.
 
@@ -318,35 +322,47 @@ A dual-channel plot overlays the User A Signal, User B Signal, and Mutual Resona
 
 ---
 
-## 10 | Visual State Contrast
+## 11 | Visual State Contrast
 
 Higher-order states progress from **Monochrome Convergence → Dual-Color Convergence → Multicolor Interweaving → Open Dispersion**, with particles alternating between *Approach* and *Compact / Dispersed* configurations.
 
-### Particle State Test Ladder
+### Particle State Test — 15 State Animations (Left 5 · Middle 5 · Right 5)
 
-The visualization deck validates the particle engine through a three-row state ladder, where each cell pairs a mental-state label with its visual signature:
+The visualization deck validates the particle engine through a state ladder of fifteen panels. Panels are narrated in three thematic groups of five, read left to right; each label pair links a mental-state condition to its visual signature, and every state is rendered as a short looping particle animation.
 
-**Row 1 — activation and shape**
-- Thinking flattening → Particles converging
-- Attention focusing
-- Particles diffusing
-- Thinking activating → New colors appearing
+**Left Group — Decline: flattening, weakening, reaching minimum**
 
-**Row 2 — emotion / resonance decay and rise**
-- Emotion weakening → Two colors fading
-- Resonance weakening → Particles separating
-- A's emotion weakening → Red fading
-- B's emotion weakening → Blue fading
-- A's thinking dominating → Cool colors expanding
-- Resonance enhancing → Multiple colors converging
+1. Thinking flattening → Particles converging
+2. Emotion weakening → Two colors fading
+3. Resonance weakening → Particles separating
+4. Emotion reaching minimum → Two colors disappearing
+5. Resonance reaching minimum → Colors disappearing
 
-**Row 3 — minimum, dislocation, and expansion**
-- Emotion reaching minimum → Two colors disappearing
-- Resonance reaching minimum → Colors disappearing
-- A's emotion dislocating → Red disappearing
-- B's emotion dislocating → Blue disappearing
-- B's thinking dominating → Warm colors expanding
-- Attention diffusing → Multiple colors interweaving
+**Middle Group — Focus, diffusion, and per-side emotion change**
+
+1. Attention focusing
+2. Particles diffusing
+3. A's emotion weakening → Red fading
+4. B's emotion weakening → Blue fading
+5. Emotion dislocating → side colors disappearing (A's emotion dislocating → Red disappearing; B's emotion dislocating → Blue disappearing)
+
+**Right Group — Activation, enhancement, and interweaving**
+
+1. Thinking activating → New colors appearing
+2. A's thinking dominating → Cool colors expanding
+3. Resonance enhancing → Multiple colors converging
+4. B's thinking dominating → Warm colors expanding
+5. Attention diffusing → Multiple colors interweaving
+
+### Comprehension Test
+
+Each of the fifteen states is presented to test viewers (performers and audience samples) as a particle animation, and the visual language is evaluated against three questions:
+
+1. **Can the two particle groups be distinguished?** Viewers must tell apart the two minds' particle groups (e.g., red / blue, warm / cool clusters) even under convergence, fading, or interweaving; group separation must remain legible rather than collapsing into one indistinguishable cloud.
+2. **Can the underlying state be judged?** After watching an animation, viewers select the matching mental state among Thinking (flattening / activating), Emotion (weakening / peak / dislocating), Resonance (weakening / enhancing / minimum), and Attention (focusing / diffusing); recognition accuracy is recorded per state.
+3. **Is the visual change easy to understand?** Viewers rate whether each transition — fading, separating, expanding, converging, interweaving — is perceptible, directional, and self-explanatory, so that the change in mental state reads intuitively without extra annotation.
+
+States that fail any criterion are revised through the particle geometry parameters (Flow Width, Color Brightness, Flow Curvature, Spacing Length) and retested before live deployment; the test closes the loop between state design, particle behavior, and audience readability.
 
 The central particle visual in the deck is based on *"hyper-mix"* by edankwan.
 
@@ -354,7 +370,7 @@ The central particle visual in the deck is based on *"hyper-mix"* by edankwan.
 
 ---
 
-## 11 | Live Performance Demo
+## 12 | Live Performance Demo
 
 The full system is deployed as a two-performer ensemble: both musicians wear OpenBCI headsets while playing, their 14-channel EEG streams are preprocessed online (ICA artifact removal, band-power extraction), and the CVAE generates a simulated partner stream that is blended with the live signal. The combined data drives a shared particle field projected onto a stage screen — magenta for Performer A, cyan for Performer B — visible to both performers and the audience.
 
@@ -383,7 +399,7 @@ The output `generated_csv/full_performance.csv` feeds the real-time particle ren
 
 ---
 
-## 12 | Conclusion & Future Work
+## 13 | Conclusion & Future Work
 
 **Harmonizing Minds** closes the loop between neural activity, musical performance, and stage imagery: hidden mental states of two performers are made visible as a shared particle field, giving the audience an empathetic window into the moment-to-moment dialogue on stage. The CVAE-based generative model lets one performer be simulated, enabling bidirectional mind-to-mind exchange even when only one human is present.
 
