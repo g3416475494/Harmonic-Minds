@@ -19,23 +19,6 @@ Traditional performance practice has three persistent gaps:
 2. **Preset stage visuals** are fixed and do not reflect what is actually happening on stage.
 3. **Audiences infer emotion** only from body language and facial expression — the inner neural state remains hidden.
 
-### Project Structure
-
-```
-├── run.py                  # Training / inference entry
-├── concat_performance.py   # Concatenate segments into full performance
-├── timeline.txt            # Musical segment timeline configuration
-├── cvae_eeg/               # Model package
-│   ├── config.py           # Hyperparameters
-│   ├── dataset.py          # Data loading
-│   ├── model.py            # CVAE model
-│   ├── train.py            # Training logic
-│   └── inference.py         # Inference generation
-├── data/                   # Raw collected data (CSV)
-├── checkpoints/            # Trained model weights
-└── generated_csv/          # Generated simulated signals
-```
-
 ---
 
 ## 02 | Case Study
@@ -52,20 +35,11 @@ The system is built on established open-source toolchains and references prior E
 | Artistic | ***Csound's Brain*** (NIME '26) | Treats EEG as a performance instrument; extracts θ/α/β/γ band power and maps them onto SATB harmony and melody |
 | Artistic | ***Neurorecital*** (Nicolas Namoradze) | Live piano performance with synchronized EEG-driven visuals; lets the audience visually perceive the performer's inner neural and emotional activity |
 
-### Requirements
-
-- Python 3.8+
-- Dependencies:
-
-```bash
-pip install torch pandas numpy
-```
-
 ![Page 1 — Research: Background & Case Study](docs/01_research.jpeg)
 
 ---
 
-## 01 | EEG Feature Layer
+## 03 | EEG Feature Layer
 
 Five canonical brainwave bands are extracted from each performer's signal:
 
@@ -87,19 +61,11 @@ Not every band is usable on a live stage. The exploration deck marks two bands a
 - **α Alpha — retained (✓):** relaxation, soothing effect, calm immersion; rendered as soft halos and low-speed animation.
 - **β Beta — retained (✓):** focused, intense, high cognitive load, difficult performance; rendered as quick lines.
 
-### Data Format
-
-Raw data is CSV, one row per **0.5 second**, containing 5 band-power values:
-
-```csv
-timestamp,time_s,Theta,Alpha,LowBeta,HighBeta,Gamma
-```
-
 Each segment requires 3 recording sessions, named `{segment}-1.csv`, `{segment}-2.csv`, `{segment}-3.csv`, placed in the `data/` directory.
 
 ---
 
-## 02 | Mapping Pipeline
+## 04 | Mapping Pipeline
 
 ```
 Raw EEG  ──▶  Feature Extraction  ──▶  Visual Output
@@ -160,7 +126,7 @@ The exploration deck defines four geometry-level mappings that complement the re
 
 ---
 
-## 03 | Visualization
+## 05 | Visualization
 
 ### Mapping EEG Metrics to Particle Parameters
 
@@ -175,35 +141,7 @@ Two simulated EEG streams (Stream A / Stream B, each carrying α/β/θ power) ar
 
 The resulting particle field feeds back as **visual feedback** to both performers and the audience, closing the brain-to-screen loop.
 
-### Train Models
-
-Train a CVAE model for each musical segment using the collected signals:
-
-```bash
-python run.py --segment playful
-python run.py --segment meditative
-python run.py --segment intense
-python run.py --segment lyrical
-```
-
-Trained weights are saved to `checkpoints/cvae_{segment}.pth`.
-
----
-
-## 04 | Prototype States
-
-### Generate Simulated Signals
-
-Use trained models to generate simulated band-power signals of specified duration:
-
-```bash
-python run.py --infer --segment playful   --duration 120
-python run.py --infer --segment meditative --duration 120
-python run.py --infer --segment intense   --duration 120
-python run.py --infer --segment lyrical  --duration 120
-```
-
-Generated CSV files are saved in the `generated_csv/` directory.
+## 06 | Prototype States
 
 ### Resonance × Mentation State Grid
 
@@ -218,7 +156,7 @@ Emotion amplitude further grades the output into **(A) Peak Emotion**, **(B) Pea
 
 ---
 
-## 01 | From Neural Signals to Shared Experience (CVAE)
+## 07 | CVAE: From Neural Signals to Shared Experience
 
 A Conditional Variational Autoencoder learns the joint distribution of EEG features conditioned on music mood. During performance it simulates the "partner" mind state in real time, enabling bidirectional exchange between a live performer and the simulated counterpart.
 
@@ -251,6 +189,68 @@ z (20) ──FC+ReLU──▶ 20 ──FC+Sigmoid──▶ 400 ──FC+ReLU─�
 
 The stage overview shows the shared particle field projected onto a large concert-hall screen, visible to both performers and the audience.
 
+### Project Structure
+
+```
+├── run.py                  # Training / inference entry
+├── concat_performance.py   # Concatenate segments into full performance
+├── timeline.txt            # Musical segment timeline configuration
+├── cvae_eeg/               # Model package
+│   ├── config.py           # Hyperparameters
+│   ├── dataset.py          # Data loading
+│   ├── model.py            # CVAE model
+│   ├── train.py            # Training logic
+│   └── inference.py         # Inference generation
+├── data/                   # Raw collected data (CSV)
+├── checkpoints/            # Trained model weights
+└── generated_csv/          # Generated simulated signals
+```
+
+### Requirements
+
+- Python 3.8+
+- Dependencies:
+
+```bash
+pip install torch pandas numpy
+```
+
+### Data Format
+
+Raw data is CSV, one row per **0.5 second**, containing 5 band-power values:
+
+```csv
+timestamp,time_s,Theta,Alpha,LowBeta,HighBeta,Gamma
+```
+
+### Train Models
+
+Train a CVAE model for each musical segment using the collected signals:
+
+```bash
+python run.py --segment playful
+python run.py --segment meditative
+python run.py --segment intense
+python run.py --segment lyrical
+```
+
+Trained weights are saved to `checkpoints/cvae_{segment}.pth`.
+
+### Generate Simulated Signals
+
+Use trained models to generate simulated band-power signals of specified duration:
+
+```bash
+python run.py --infer --segment playful   --duration 120
+python run.py --infer --segment meditative --duration 120
+python run.py --infer --segment intense   --duration 120
+python run.py --infer --segment lyrical  --duration 120
+```
+
+Generated CSV files are saved in the `generated_csv/` directory.
+
+---
+
 ### Concatenate Full Performance
 
 Based on the musical segment timeline annotated in `timeline.txt`, concatenate simulated segments into a complete EEG signal for the full performance:
@@ -263,15 +263,6 @@ python concat_performance.py --prep 10 --transition 5
 - `--transition`: Crossfade duration in seconds (split equally before and after each segment switch)
 
 Output: `generated_csv/full_performance.csv`
-
----
-
-## 02 | User Journey
-
-1. **Training AI** — Acquire EEG data from live performances to train a CVAE model that simulates a human performer's mental state in real time.
-2. **Performer Side** — A real-time particle display lets performers see each other's mental state and adjust their playing to achieve mutual neural rapport.
-3. **On Stage** — Live EEG and simulated brainwave exchange bidirectionally, driving spontaneous, mind-to-mind improvisation.
-4. **Audience Side** — Hidden performer emotions are externalized into visible particle motion, giving the audience an immersive and empathetic window into the performance.
 
 ### Configuration — `timeline.txt` Format
 
@@ -287,11 +278,20 @@ END_TIME=422
 
 Available segment names: `prelude`, `lyrical`, `playful`, `intense`, `meditative`, `blank` (rest / preparation).
 
+---
+
+## 08 | User Journey
+
+1. **Training AI** — Acquire EEG data from live performances to train a CVAE model that simulates a human performer's mental state in real time.
+2. **Performer Side** — A real-time particle display lets performers see each other's mental state and adjust their playing to achieve mutual neural rapport.
+3. **On Stage** — Live EEG and simulated brainwave exchange bidirectionally, driving spontaneous, mind-to-mind improvisation.
+4. **Audience Side** — Hidden performer emotions are externalized into visible particle motion, giving the audience an immersive and empathetic window into the performance.
+
 ![Page 3 — Technology: CVAE Architecture & User Journey](docs/03_technology.jpeg)
 
 ---
 
-## 01 | Between Two Minds
+## 09 | Between Two Minds
 
 Two EEG streams (Performer A = magenta, Performer B = cyan) feed a shared particle field. Relative metrics — activation, stability, state difference `D`, and similarity `1 − D` — are exponentially smoothed (τ ≈ 0.45 s) and drive emitter speed, curl noise, emitter separation, and shared-field interaction.
 
@@ -318,7 +318,7 @@ A dual-channel plot overlays the User A Signal, User B Signal, and Mutual Resona
 
 ---
 
-## 02 | Visual State Contrast
+## 10 | Visual State Contrast
 
 Higher-order states progress from **Monochrome Convergence → Dual-Color Convergence → Multicolor Interweaving → Open Dispersion**, with particles alternating between *Approach* and *Compact / Dispersed* configurations.
 
@@ -354,7 +354,7 @@ The central particle visual in the deck is based on *"hyper-mix"* by edankwan.
 
 ---
 
-## 01 | Live Performance Demo
+## 11 | Live Performance Demo
 
 The full system is deployed as a two-performer ensemble: both musicians wear OpenBCI headsets while playing, their 14-channel EEG streams are preprocessed online (ICA artifact removal, band-power extraction), and the CVAE generates a simulated partner stream that is blended with the live signal. The combined data drives a shared particle field projected onto a stage screen — magenta for Performer A, cyan for Performer B — visible to both performers and the audience.
 
@@ -383,7 +383,7 @@ The output `generated_csv/full_performance.csv` feeds the real-time particle ren
 
 ---
 
-## 02 | Conclusion & Future Work
+## 12 | Conclusion & Future Work
 
 **Harmonizing Minds** closes the loop between neural activity, musical performance, and stage imagery: hidden mental states of two performers are made visible as a shared particle field, giving the audience an empathetic window into the moment-to-moment dialogue on stage. The CVAE-based generative model lets one performer be simulated, enabling bidirectional mind-to-mind exchange even when only one human is present.
 
