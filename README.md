@@ -7,9 +7,9 @@
 
 **Harmonic Minds** is a real-time audiovisual performance system that translates the neural activity of two performers into a shared particle field. The technical core is a **Conditional VAE (CVAE)** that learns band-power distributions per musical mood (Lyrical / Playful / Intense / Meditative) and simulates a partner brainwave stream in real time.
 
----
-
 ![Page 0 — Hero: Harmonic Minds title](docs/00_hero.jpeg)
+
+---
 
 ## 01 | Background
 
@@ -43,33 +43,23 @@ The system is built on established open-source toolchains and references prior E
 
 Five canonical brainwave bands are extracted from each performer's signal:
 
-| Band | Frequency | Mental State |
-|---|---|---|
-| **δ** Delta | < 4 Hz | Deep sleep, physical recovery, unconscious states |
-| **θ** Theta | 4 – 8 Hz | Drowsiness, meditation, memory processing, inward focus |
-| **α** Alpha | 8 – 13 Hz | Relaxed wakefulness, calm attention (stronger with eyes closed) |
+| Band | Frequency  | Mental State |
+|---|------------|---|
+| **δ** Delta | < 4 Hz     | Deep sleep, physical recovery, unconscious states |
+| **θ** Theta | 4 – 8 Hz   | Drowsiness, meditation, memory processing, inward focus |
+| **α** Alpha | 8 – 13 Hz  | Relaxed wakefulness, calm attention (stronger with eyes closed) |
 | **β** Beta | 13 – 30 Hz | Active thinking, focused attention, decision-making |
-| **γ** Gamma | 30 Hz+ | High-level cognition, sensory integration, complex attention |
+| **γ** Gamma | > 30 Hz    | High-level cognition, sensory integration, complex attention |
 
 ### Stage Band Selection & Qualitative Mapping
 
-Not every band is usable on a live stage. The exploration deck marks two bands as excluded and three as retained:
+Not every band is usable on a live stage:
 
 - **δ Delta — excluded (✗):** extreme fatigue and deep sleep; it hardly appears during a performance.
 - **γ Gamma — excluded (✗):** extreme thrill and ensemble rapport, but the band is highly disrupted by environmental noise on stage.
 - **θ Theta — retained (✓):** empathy, reverie, melancholic mood; rendered as slow flowing lines and cool tones.
 - **α Alpha — retained (✓):** relaxation, soothing effect, calm immersion; rendered as soft halos and low-speed animation.
 - **β Beta — retained (✓):** focused, intense, high cognitive load, difficult performance; rendered as quick lines.
-
-### Data Format
-
-Raw data is CSV, one row per **0.5 second**, containing 5 band-power values:
-
-```csv
-timestamp,time_s,Theta,Alpha,LowBeta,HighBeta,Gamma
-```
-
-Each segment requires 3 recording sessions, named `{segment}-1.csv`, `{segment}-2.csv`, `{segment}-3.csv`, placed in the `data/` directory.
 
 ---
 
@@ -82,7 +72,7 @@ Raw EEG  ──▶  Feature Extraction  ──▶  Visual Output
                mutual resonance)      ── control parameters ──▶ particle field
 ```
 
-### Visual Output — Why Particles as a Visual Language?
+### Why Use Particles as a Visual Language?
 
 Particles were chosen because their **geometry** naturally mirrors two familiar musical primitives — the **note head** and the **audio waveform** — but their **motion** can carry what a rigid waveform cannot: a feeling of inner mental state made visible. A particle field is:
 
@@ -90,10 +80,6 @@ Particles were chosen because their **geometry** naturally mirrors two familiar 
 - **Real-time** — responds frame-by-frame to live EEG shifts
 - **Uncertain** — stochastic, never repeating, mirroring the ambiguity of emotion
 - **Boundless** — can spread, converge, or disperse without a fixed form
-
-### Preprocessing
-
-Apply artifact removal (**ICA filtering**) to remove eye blinks, facial muscle artifacts, and other noise from the raw signal. Export cleaned data as standard CSV into the `data/` directory.
 
 ### 14-Channel Headset Regional Layout
 
@@ -151,22 +137,40 @@ The resulting particle field feeds back as **visual feedback** to both performer
 
 ---
 
-## 06 | Prototype States
+## 05 | Visualization
 
-### Resonance × Mentation State Grid
+### Mapping States to Particle Morphology
 
-The prototype states are organized along two axes — resonance level (Low / High) and attention–mentation state:
+- **Low Resonance regime**:
+  - Intense Mentation: Focused Attention forms large, solid, well-separated red/blue particle blobs; Divergent Attention yields curved, crescent-shaped distinct color clusters.
+  - Subdued Mentation: Focused / Divergent Attention shrink into slender, narrow red-blue streaks, still cleanly partitioned by color.
 
-- **Low Resonance:** Focused Attention / Divergent Attention crossed with Intense / Subdued Mentation; particles stay compact and separated into distinct color clusters.
-- **High Resonance:** Divergent / Focused Attention crossed with Subdued / Intense Mentation; clusters interweave into mixed-color clouds.
+- **High Resonance regime**:
+  - Subdued Mentation: Attention modes condense into tiny, sparse blended purple particle masses with low spread.
+  - Intense Mentation: Focused Attention becomes a tightly packed mottled red-purple sphere; Divergent Attention blooms into a diffuse, turbulent mixed-color cloud.
 
-Emotion amplitude further grades the output into **(A) Peak Emotion**, **(B) Peak Emotion**, **Medium Emotion**, and **Weak Emotion**, controlling particle density and color saturation.
+Emotion amplitude provides an additional visual dimension:
+  - Emotion Peak (A): Segregated high-saturation color masses
+  - Emotion Peak (B): Chaotic overlapping red-white clusters
+  - Medium Emotion: Soft desaturated blended particle aggregates
+  - Weak Emotion: Sparse, pale, nearly monochromatic particle formation
 
 ![Page 2 — EEG Feature Layer, Mapping Pipeline, Visualization & Prototype States](docs/02_features.jpeg)
 
 ---
 
 ## 07 | CVAE: From Neural Signals to Shared Experience
+
+### Dense Baseline CVAE
+
+A fully-connected reference autoencoder using the reparameterization trick:
+
+```
+784 ──FC+ReLU──▶ 400 ──FC──▶ μ (20)
+                        └─FC──▶ σ (20)
+μ, σ ── Reparameterization trick ──▶ z (20)
+z (20) ──FC+ReLU──▶ 20 ──FC+Sigmoid──▶ 400 ──FC+ReLU──▶ 784
+```
 
 A Conditional Variational Autoencoder learns the joint distribution of EEG features conditioned on music mood. During performance it simulates the "partner" mind state in real time, enabling bidirectional exchange between a live performer and the simulated counterpart.
 
@@ -176,17 +180,6 @@ Input (EEG × mood)
    ├── CNN / LSTM encoders per mood ──▶ latent (μ, σ, z) ── reparameterization ──▶
    │
    └──────────────── Decoder (LSTM + Concat) ──────────▶ Output (generated EEG stream)
-```
-
-### Dense Baseline CVAE (Unconditioned Reference)
-
-The design deck also shows a fully-connected reference autoencoder using the reparameterization trick:
-
-```
-784 ──FC+ReLU──▶ 400 ──FC──▶ μ (20)
-                        └─FC──▶ σ (20)
-μ, σ ── Reparameterization trick ──▶ z (20)
-z (20) ──FC+ReLU──▶ 20 ──FC+Sigmoid──▶ 400 ──FC+ReLU──▶ 784
 ```
 
 ### Mood-Conditioned Hybrid Architecture
@@ -228,6 +221,20 @@ The stage overview shows the shared particle field projected onto a large concer
 ```bash
 pip install torch pandas numpy
 ```
+
+### Data Format
+
+Raw data is CSV, one row per **0.5 second**, containing 5 band-power values:
+
+```csv
+timestamp,time_s,Theta,Alpha,LowBeta,HighBeta,Gamma
+```
+
+Each segment requires 3 recording sessions, placed in the `data/` directory.
+
+### Preprocessing
+
+Apply artifact removal (**ICA filtering**) to remove eye blinks, facial muscle artifacts, and other noise from the raw signal. Export cleaned data as standard CSV into the `data/` directory.
 
 ### Train Models
 
@@ -280,7 +287,11 @@ Output: `generated_csv/full_performance.csv`
 END_TIME=422
 ```
 
-Available segment names: `prelude`, `lyrical`, `playful`, `intense`, `meditative`, `blank` (rest / preparation).
+Available segment names: `lyrical`, `playful`, `intense`, `meditative`, `blank` (rest / preparation).
+
+### Running the Full Pipeline
+
+The output `generated_csv/full_performance.csv` feeds the real-time particle renderer via LSL, producing the live visual score.
 
 ---
 
@@ -297,7 +308,7 @@ Available segment names: `prelude`, `lyrical`, `playful`, `intense`, `meditative
 
 ## 10 | Between Two Minds
 
-Two EEG streams (Performer A = magenta, Performer B = cyan) feed a shared particle field. Relative metrics — activation, stability, state difference `D`, and similarity `1 − D` — are exponentially smoothed (τ ≈ 0.45 s) and drive emitter speed, curl noise, emitter separation, and shared-field interaction.
+Two simulated EEG streams (Stream A = red, Stream B = cyan/blue; each carrying α / β / θ band power) feed a shared particle field. Their signals enter the **Relational Metrics + Exponential Smoothing** stage, which produces four controlled measures: **Emotion → Color Intensity (Red / Blue)**, **Immersion → Source Count**, **Mutual Resonance → Emitter Separation**, and **Thinking → Motion Rate**. These four parameters jointly drive the **Shared Particle Field · Visual Feedback**, and the field feeds back visually to both streams, closing the mind-to-mind interaction loop.
 
 Four characteristic dramatic states emerge:
 
@@ -310,11 +321,11 @@ Four characteristic dramatic states emerge:
 
 ### Single EEG Archetype Charts
 
-For each dramatic state, a bar chart compares User A Power and User B Power across θ, α, β, characterizing the four archetypes: Feeling Explosion, Concentrated Resonance, Emotional Dislocation, and Synchronized Meditation.
+For each dramatic state, the bar chart compares User A Power and User B Power across θ, α, β, characterizing the four archetypes: Feeling Explosion, Concentrated Resonance, Emotional Dislocation, and Synchronized Meditation.
 
 ### Dual EEG Time Trace
 
-A dual-channel plot overlays the User A Signal, User B Signal, and Mutual Resonance curve across roughly 0–30 s, showing three consecutive phases:
+The dual-channel plot overlays the User A Signal, User B Signal, and Mutual Resonance curve across roughly 0–30 s, showing three consecutive phases:
 
 1. **Similar trends** — the two signals rise and fall together.
 2. **Almost reversed** — the two signals diverge into opposing trends.
@@ -326,11 +337,9 @@ A dual-channel plot overlays the User A Signal, User B Signal, and Mutual Resona
 
 Higher-order states progress from **Monochrome Convergence → Dual-Color Convergence → Multicolor Interweaving → Open Dispersion**, with particles alternating between *Approach* and *Compact / Dispersed* configurations.
 
-### Particle State Test — 15 State Animations (Left 5 · Middle 5 · Right 5)
+### Particle State Test — State Animations
 
-The visualization deck validates the particle engine through a state ladder of fifteen panels. Panels are narrated in three thematic groups of five, read left to right; each label pair links a mental-state condition to its visual signature, and every state is rendered as a short looping particle animation.
-
-**Left Group — Decline: flattening, weakening, reaching minimum**
+**Flattening, weakening, reaching minimum**
 
 1. Thinking flattening → Particles converging
 2. Emotion weakening → Two colors fading
@@ -338,7 +347,7 @@ The visualization deck validates the particle engine through a state ladder of f
 4. Emotion reaching minimum → Two colors disappearing
 5. Resonance reaching minimum → Colors disappearing
 
-**Middle Group — Focus, diffusion, and per-side emotion change**
+**Focus, diffusion, and per-side emotion change**
 
 1. Attention focusing
 2. Particles diffusing
@@ -346,7 +355,7 @@ The visualization deck validates the particle engine through a state ladder of f
 4. B's emotion weakening → Blue fading
 5. Emotion dislocating → side colors disappearing (A's emotion dislocating → Red disappearing; B's emotion dislocating → Blue disappearing)
 
-**Right Group — Activation, enhancement, and interweaving**
+**Activation, enhancement, and interweaving**
 
 1. Thinking activating → New colors appearing
 2. A's thinking dominating → Cool colors expanding
@@ -356,15 +365,13 @@ The visualization deck validates the particle engine through a state ladder of f
 
 ### Comprehension Test
 
-Each of the fifteen states is presented to test viewers (performers and audience samples) as a particle animation, and the visual language is evaluated against three questions:
+Each of the states is presented to test viewers (performers and audience samples) as a particle animation, and the visual language is evaluated against three questions:
 
-1. **Can the two particle groups be distinguished?** Viewers must tell apart the two minds' particle groups (e.g., red / blue, warm / cool clusters) even under convergence, fading, or interweaving; group separation must remain legible rather than collapsing into one indistinguishable cloud.
-2. **Can the underlying state be judged?** After watching an animation, viewers select the matching mental state among Thinking (flattening / activating), Emotion (weakening / peak / dislocating), Resonance (weakening / enhancing / minimum), and Attention (focusing / diffusing); recognition accuracy is recorded per state.
-3. **Is the visual change easy to understand?** Viewers rate whether each transition — fading, separating, expanding, converging, interweaving — is perceptible, directional, and self-explanatory, so that the change in mental state reads intuitively without extra annotation.
+1. **The two particle groups are distinguishable.** Viewers can tell apart the two minds' particle groups (e.g., red /blue, warm /cool clusters) even under convergence, fading, or interweaving; group separation remains legible rather than collapsing into one indistinguishable cloud.
+2. **The underlying mental state is identifiable.** After watching an animation, viewers can select the matching mental state among Thinking (flattening /activating), Emotion (weakening /peak/dislocating), Resonance (weakening /enhancing/minimum), and Attention (focusing /diffusing); recognition accuracy is recorded for each state.
+3. **Visual transitions are intuitively comprehensible.** Viewers evaluate each transition — fading, separating, expanding, converging, interweaving — to confirm that it is perceptible, directional, and self‑explanatory, so that shifts in mental state can be interpreted intuitively without extra annotation.
 
-States that fail any criterion are revised through the particle geometry parameters (Flow Width, Color Brightness, Flow Curvature, Spacing Length) and retested before live deployment; the test closes the loop between state design, particle behavior, and audience readability.
-
-The central particle visual in the deck is based on *"hyper-mix"* by edankwan.
+The particle visual is based on *["hyper-mix"](https://github.com/edankwan/hyper-mix)* by edankwan.
 
 ![Page 4 — Visualization: Between Two Minds & State Contrast](docs/04_visualization.jpeg)
 
@@ -374,43 +381,25 @@ The central particle visual in the deck is based on *"hyper-mix"* by edankwan.
 
 The full system is deployed as a two-performer ensemble: both musicians wear OpenBCI headsets while playing, their 14-channel EEG streams are preprocessed online (ICA artifact removal, band-power extraction), and the CVAE generates a simulated partner stream that is blended with the live signal. The combined data drives a shared particle field projected onto a stage screen — magenta for Performer A, cyan for Performer B — visible to both performers and the audience.
 
-### Running the Full Pipeline
-
-The output `generated_csv/full_performance.csv` feeds the real-time particle renderer via LSL, producing the live visual score.
-
 ### Stage Performance Sequence
 
 **1. Before Performance.** Each performer puts on the EEG headset and connects it to the processor and screen. The system first acquires background baseline signals for the relaxed state and the eye-blinking state.
 
-**2. Individual States.** The performance is divided into four musical sections, each profiled with a waveform trace, a scalp topographic heatmap, a performer photograph, and a corresponding particle snapshot:
-
-| Section | State |
-|---|---|
-| Section A | Meditative |
-| Section B | Playful |
-| Section C | Lyrical |
-| Section D | Intense |
+**2. Individual States.** The performance is divided into four types of musical sections (**Meditative**, **Playful**, **Lyrical**, and **Intense**), each profiled with waveform trace, scalp topographic heatmap, performer photograph, and corresponding particle snapshot:
 
 **3. Between Performers.** Brain A represents the Human Performer (e.g., guitar), while Brain B represents the AI Signal (e.g., keyboard). Performers adjust their playing state by observing the real-time particle motion on the screen in front of them.
 
-**4. Audience Experience.** A stage dashboard reports, for each performer, Theta, Alpha, Beta (low), Beta (high), Thinking, Emotion, and Immersion levels, together with a shared **Resonance** value. The audience watches how the performers' emotions shift along with the music sections; data collected from the performance can be reused for subsequent AI training.
+**4. Audience Experience.** A stage dashboard reports, for each performer, Theta, Alpha, Beta (low), Beta (high), **Thinking**, **Emotion**, and **Immersion** levels, together with a shared **Resonance** value. The audience watches how the performers' emotions shift along with the music sections; data collected from the performance can be reused for subsequent AI training.
 
 **Timeline section color legend:** Playful Section (pink), Meditative Section (cyan), Intense Section (red), Lyrical Section (blue), Setting-up (gray).
 
+![Page 5 — Demo / Results / Conclusion](docs/05_demo.jpeg)
+
 ---
 
-## 13 | Conclusion & Future Work
+## 13 | Conclusion
 
 **Harmonizing Minds** closes the loop between neural activity, musical performance, and stage imagery: hidden mental states of two performers are made visible as a shared particle field, giving the audience an empathetic window into the moment-to-moment dialogue on stage. The CVAE-based generative model lets one performer be simulated, enabling bidirectional mind-to-mind exchange even when only one human is present.
-
-Next steps:
-
-- Scale from two performers to small ensemble EEG interaction
-- Add closed-loop audio synthesis so particle motion feeds back into the music
-- Conduct audience perception studies on whether the visualization enhances emotional engagement
-- Publish the open-source CVAE EEG generation toolkit for other BCI-performance researchers
-
-![Page 5 — Demo / Results / Conclusion](docs/05_demo.jpeg)
 
 ---
 
