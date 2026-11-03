@@ -1,15 +1,15 @@
-# Harmonizing Minds
+# Harmonic Minds
 
 ### A Brain-Driven Audiovisual Experience for Dual-Person EEG Interaction in Music Performance
 #### CVAE EEG Signal Generation Model
 
 > Two performers · One shared particle field · A synchronized mind-to-mind dialogue
 
-**Harmonizing Minds** is a real-time audiovisual performance system that translates the neural activity of two performers into a shared particle field. The technical core is a **Conditional VAE (CVAE)** that learns band-power distributions per musical mood (Lyrical / Playful / Intense / Meditative) and simulates a partner brainwave stream in real time.
+**Harmonic Minds** is a real-time audiovisual performance system that translates the neural activity of two performers into a shared particle field. The technical core is a **Conditional VAE (CVAE)** that learns band-power distributions per musical mood (Lyrical / Playful / Intense / Meditative) and simulates a partner brainwave stream in real time.
 
 ---
 
-![Page 0 — Hero: Harmonizing Minds title](docs/00_hero.jpeg)
+![Page 0 — Hero: Harmonic Minds title](docs/00_hero.jpeg)
 
 ## 01 | Background
 
@@ -412,4 +412,7 @@ Next steps:
 ## Author
 
 **Li Ruichen** — Hunan University
+
+Supervised by **Xu Yang**
+
 Project 01 · 2026
