@@ -56,10 +56,10 @@ Five canonical brainwave bands are extracted from each performer's signal:
 Not every band is usable on a live stage:
 
 - **δ Delta — excluded (✗):** extreme fatigue and deep sleep; it hardly appears during a performance.
-- **γ Gamma — excluded (✗):** extreme thrill and ensemble rapport, but the band is highly disrupted by environmental noise on stage.
 - **θ Theta — retained (✓):** empathy, reverie, melancholic mood; rendered as slow flowing lines and cool tones.
 - **α Alpha — retained (✓):** relaxation, soothing effect, calm immersion; rendered as soft halos and low-speed animation.
 - **β Beta — retained (✓):** focused, intense, high cognitive load, difficult performance; rendered as quick lines.
+- **γ Gamma — excluded (✗):** extreme thrill and ensemble rapport, but the band is highly disrupted by environmental noise on stage.
 
 ---
 
@@ -122,23 +122,6 @@ The exploration deck defines four geometry-level mappings that complement the re
 
 ## 05 | Visualization
 
-### Mapping EEG Metrics to Particle Parameters
-
-Two simulated EEG streams (Stream A / Stream B, each carrying α/β/θ power) are combined through **relational metrics with exponential smoothing** (τ ≈ 0.45 s), then mapped to four particle-engine parameters:
-
-| EEG Metric | Particle Parameter | Formula |
-|---|---|---|
-| **Emotion** | Color Intensity (Red / Blue) | `(β + θ) / α` |
-| **Immersion** | Source Count | `θ / β` |
-| **Mutual Resonance** | Emitter Separation | `½(1 + Pearson r)` between A and B |
-| **Thinking** | Motion Rate | `β / α` |
-
-The resulting particle field feeds back as **visual feedback** to both performers and the audience, closing the brain-to-screen loop.
-
----
-
-## 05 | Visualization
-
 ### Mapping States to Particle Morphology
 
 - **Low Resonance regime**:
@@ -159,7 +142,7 @@ Emotion amplitude provides an additional visual dimension:
 
 ---
 
-## 07 | CVAE: From Neural Signals to Shared Experience
+## 06 | CVAE: From Neural Signals to Shared Experience
 
 ### Dense Baseline CVAE
 
@@ -190,11 +173,9 @@ Input (EEG × mood)
 - **Decoder:** LSTM layers with feature concatenation (`Concat`).
 - **Output:** Generated EEG data simulating a real human performer.
 
-The stage overview shows the shared particle field projected onto a large concert-hall screen, visible to both performers and the audience.
-
 ---
 
-## 08 | Implementation & Configuration
+## 07 | Implementation & Configuration
 
 ### Project Structure
 
@@ -275,7 +256,9 @@ python concat_performance.py --prep 10 --transition 5
 
 Output: `generated_csv/full_performance.csv`
 
-### Configuration — `timeline.txt` Format
+### Configuration
+
+`timeline.txt` Format:
 
 ```
 # Start time (seconds),segment name
@@ -295,7 +278,11 @@ The output `generated_csv/full_performance.csv` feeds the real-time particle ren
 
 ---
 
-## 09 | User Journey
+## 08 | User Journey
+
+The stage overview shows the shared particle field projected onto a large concert-hall screen, visible to both performers and the audience.
+
+### Process Overview
 
 1. **Training AI** — Acquire EEG data from live performances to train a CVAE model that simulates a human performer's mental state in real time.
 2. **Performer Side** — A real-time particle display lets performers see each other's mental state and adjust their playing to achieve mutual neural rapport.
@@ -306,7 +293,7 @@ The output `generated_csv/full_performance.csv` feeds the real-time particle ren
 
 ---
 
-## 10 | Between Two Minds
+## 09 | Between Two Minds
 
 Two simulated EEG streams (Stream A = red, Stream B = cyan/blue; each carrying α / β / θ band power) feed a shared particle field. Their signals enter the **Relational Metrics + Exponential Smoothing** stage, which produces four controlled measures: **Emotion → Color Intensity (Red / Blue)**, **Immersion → Source Count**, **Mutual Resonance → Emitter Separation**, and **Thinking → Motion Rate**. These four parameters jointly drive the **Shared Particle Field · Visual Feedback**, and the field feeds back visually to both streams, closing the mind-to-mind interaction loop.
 
@@ -319,7 +306,7 @@ Four characteristic dramatic states emerge:
 | **Emotional Dislocation** | Opposite band power trends | Dual-color separation |
 | **Synchronized Meditation** | Both sides θ-dominant, `r ≈ 1` | Multicolor interweaving |
 
-### Single EEG Archetype Charts
+### Single EEG Archetype
 
 For each dramatic state, the bar chart compares User A Power and User B Power across θ, α, β, characterizing the four archetypes: Feeling Explosion, Concentrated Resonance, Emotional Dislocation, and Synchronized Meditation.
 
@@ -333,7 +320,7 @@ The dual-channel plot overlays the User A Signal, User B Signal, and Mutual Reso
 
 ---
 
-## 11 | Visual State Contrast
+## 10 | Visual State Contrast
 
 Higher-order states progress from **Monochrome Convergence → Dual-Color Convergence → Multicolor Interweaving → Open Dispersion**, with particles alternating between *Approach* and *Compact / Dispersed* configurations.
 
@@ -371,15 +358,15 @@ Each of the states is presented to test viewers (performers and audience samples
 2. **The underlying mental state is identifiable.** After watching an animation, viewers can select the matching mental state among Thinking (flattening /activating), Emotion (weakening /peak/dislocating), Resonance (weakening /enhancing/minimum), and Attention (focusing /diffusing); recognition accuracy is recorded for each state.
 3. **Visual transitions are intuitively comprehensible.** Viewers evaluate each transition — fading, separating, expanding, converging, interweaving — to confirm that it is perceptible, directional, and self‑explanatory, so that shifts in mental state can be interpreted intuitively without extra annotation.
 
-The particle visual is based on *["hyper-mix"](https://github.com/edankwan/hyper-mix)* by edankwan.
+> The particle visual is based on *["hyper-mix"](https://github.com/edankwan/hyper-mix)* by edankwan.
 
 ![Page 4 — Visualization: Between Two Minds & State Contrast](docs/04_visualization.jpeg)
 
 ---
 
-## 12 | Live Performance Demo
+## 11 | Live Performance Demo
 
-The full system is deployed as a two-performer ensemble: both musicians wear OpenBCI headsets while playing, their 14-channel EEG streams are preprocessed online (ICA artifact removal, band-power extraction), and the CVAE generates a simulated partner stream that is blended with the live signal. The combined data drives a shared particle field projected onto a stage screen — magenta for Performer A, cyan for Performer B — visible to both performers and the audience.
+The full system is deployed as a two-performer ensemble: both musicians wear OpenBCI headsets while playing, their 14-channel EEG streams are preprocessed online (ICA artifact removal, band-power extraction), and the CVAE generates a simulated partner stream that is blended with the live signal. The combined data drives a shared particle field projected onto a stage screen — cyan for Performer A, magenta for Performer B — visible to both performers and the audience.
 
 ### Stage Performance Sequence
 
@@ -397,13 +384,13 @@ The full system is deployed as a two-performer ensemble: both musicians wear Ope
 
 ---
 
-## 13 | Conclusion
+## 12 | Conclusion
 
 **Harmonizing Minds** closes the loop between neural activity, musical performance, and stage imagery: hidden mental states of two performers are made visible as a shared particle field, giving the audience an empathetic window into the moment-to-moment dialogue on stage. The CVAE-based generative model lets one performer be simulated, enabling bidirectional mind-to-mind exchange even when only one human is present.
 
 ---
 
-## Tech Stack
+### Tech Stack
 
 - **EEG acquisition:** OpenBCI (dual headset setup)
 - **Signal processing:** MNE-Python (filtering, artifact removal / ICA, band-power, coherence)
