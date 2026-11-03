@@ -61,7 +61,7 @@ The system is built on established open-source toolchains and references prior E
 pip install torch pandas numpy
 ```
 
-![Page 1 — Research: Background & Case Study](docs/01_research.png)
+![Page 1 — Research: Background & Case Study](docs/01_research.jpeg)
 
 ---
 
@@ -76,6 +76,16 @@ Five canonical brainwave bands are extracted from each performer's signal:
 | **α** Alpha | 8 – 13 Hz | Relaxed wakefulness, calm attention (stronger with eyes closed) |
 | **β** Beta | 13 – 30 Hz | Active thinking, focused attention, decision-making |
 | **γ** Gamma | 30 Hz+ | High-level cognition, sensory integration, complex attention |
+
+### Stage Band Selection & Qualitative Mapping
+
+Not every band is usable on a live stage. The exploration deck marks two bands as excluded and three as retained:
+
+- **δ Delta — excluded (✗):** extreme fatigue and deep sleep; it hardly appears during a performance.
+- **γ Gamma — excluded (✗):** extreme thrill and ensemble rapport, but the band is highly disrupted by environmental noise on stage.
+- **θ Theta — retained (✓):** empathy, reverie, melancholic mood; rendered as slow flowing lines and cool tones.
+- **α Alpha — retained (✓):** relaxation, soothing effect, calm immersion; rendered as soft halos and low-speed animation.
+- **β Beta — retained (✓):** focused, intense, high cognitive load, difficult performance; rendered as quick lines.
 
 ### Data Format
 
@@ -107,11 +117,46 @@ Particles were chosen because their **geometry** naturally mirrors two familiar 
 - **Uncertain** — stochastic, never repeating, mirroring the ambiguity of emotion
 - **Boundless** — can spread, converge, or disperse without a fixed form
 
-![Visual output rationale — why particles as visual language](docs/03a_visual_output.png)
-
 ### Preprocessing
 
 Apply artifact removal (**ICA filtering**) to remove eye blinks, facial muscle artifacts, and other noise from the raw signal. Export cleaned data as standard CSV into the `data/` directory.
+
+### 14-Channel Headset Regional Layout
+
+The raw signal comes from a 14-channel headset whose electrodes are grouped by cortical region, each contributing a different functional role:
+
+| Region | Functional Role |
+|---|---|
+| Prefrontal | Planning, Decision |
+| Frontal | Emotion Regulation |
+| Central | Motor Execution |
+| Temporal | Auditory Processing |
+| Parietal | Attention Integration |
+| Occipital | Visual Feedback |
+
+The layout balances sufficient spatial sampling with low computational cost, which is required for real-time stage rendering.
+
+### Control Parameters (EEG Features → Visual Behaviors)
+
+Four continuous control parameters drive the particle behavior, each with two anchor states:
+
+| Control Parameter | Anchor States |
+|---|---|
+| Thinking Intensity | Subdued ↔ Intense |
+| Attention Immersion | Divergent ↔ Focused |
+| Emotion Intensity | Weak ↔ Peak |
+| Mutual Resonance | Low ↔ High |
+
+### Mapping Matrix — EEG Features to Particle Geometry
+
+The exploration deck defines four geometry-level mappings that complement the renderer parameters above:
+
+| EEG Feature | Particle Geometry | Formula |
+|---|---|---|
+| Thinking Intensity | Flow Width | `Pβ / Pα` |
+| Emotion Intensity | Color Brightness | `(Pβ + Pθ) / Pα` |
+| Attention Immersion | Flow Curvature | `Pθ / Pβ` |
+| Mutual Resonance | Spacing Length | `½(1 + Pearson r)` |
 
 ---
 
@@ -129,8 +174,6 @@ Two simulated EEG streams (Stream A / Stream B, each carrying α/β/θ power) ar
 | **Thinking** | Motion Rate | `β / α` |
 
 The resulting particle field feeds back as **visual feedback** to both performers and the audience, closing the brain-to-screen loop.
-
-![Mapping diagram — simulated streams → relational metrics → shared particle field](docs/03b_mapping_diagram.png)
 
 ### Train Models
 
@@ -162,6 +205,15 @@ python run.py --infer --segment lyrical  --duration 120
 
 Generated CSV files are saved in the `generated_csv/` directory.
 
+### Resonance × Mentation State Grid
+
+The prototype states are organized along two axes — resonance level (Low / High) and attention–mentation state:
+
+- **Low Resonance:** Focused Attention / Divergent Attention crossed with Intense / Subdued Mentation; particles stay compact and separated into distinct color clusters.
+- **High Resonance:** Divergent / Focused Attention crossed with Subdued / Intense Mentation; clusters interweave into mixed-color clouds.
+
+Emotion amplitude further grades the output into **(A) Peak Emotion**, **(B) Peak Emotion**, **Medium Emotion**, and **Weak Emotion**, controlling particle density and color saturation.
+
 ![Page 2 — EEG Feature Layer, Mapping Pipeline, Visualization & Prototype States](docs/02_features.jpeg)
 
 ---
@@ -177,6 +229,27 @@ Input (EEG × mood)
    │
    └──────────────── Decoder (LSTM + Concat) ──────────▶ Output (generated EEG stream)
 ```
+
+### Dense Baseline CVAE (Unconditioned Reference)
+
+The design deck also shows a fully-connected reference autoencoder using the reparameterization trick:
+
+```
+784 ──FC+ReLU──▶ 400 ──FC──▶ μ (20)
+                        └─FC──▶ σ (20)
+μ, σ ── Reparameterization trick ──▶ z (20)
+z (20) ──FC+ReLU──▶ 20 ──FC+Sigmoid──▶ 400 ──FC+ReLU──▶ 784
+```
+
+### Mood-Conditioned Hybrid Architecture
+
+- **Input:** EEG data captured from performing various types of music.
+- **Encoder:** CNN and LSTM branches, conditioned on the four moods — Lyrical, Playful, Intense, Meditative.
+- **Latent Space:** `μ`, `σ`, `z`.
+- **Decoder:** LSTM layers with feature concatenation (`Concat`).
+- **Output:** Generated EEG data simulating a real human performer.
+
+The stage overview shows the shared particle field projected onto a large concert-hall screen, visible to both performers and the audience.
 
 ### Concatenate Full Performance
 
@@ -214,7 +287,7 @@ END_TIME=422
 
 Available segment names: `prelude`, `lyrical`, `playful`, `intense`, `meditative`, `blank` (rest / preparation).
 
-![Page 3 — Technology: CVAE Architecture & User Journey](docs/03_technology.png)
+![Page 3 — Technology: CVAE Architecture & User Journey](docs/03_technology.jpeg)
 
 ---
 
@@ -231,11 +304,51 @@ Four characteristic dramatic states emerge:
 | **Emotional Dislocation** | Opposite band power trends | Dual-color separation |
 | **Synchronized Meditation** | Both sides θ-dominant, `r ≈ 1` | Multicolor interweaving |
 
+### Single EEG Archetype Charts
+
+For each dramatic state, a bar chart compares User A Power and User B Power across θ, α, β, characterizing the four archetypes: Feeling Explosion, Concentrated Resonance, Emotional Dislocation, and Synchronized Meditation.
+
+### Dual EEG Time Trace
+
+A dual-channel plot overlays the User A Signal, User B Signal, and Mutual Resonance curve across roughly 0–30 s, showing three consecutive phases:
+
+1. **Similar trends** — the two signals rise and fall together.
+2. **Almost reversed** — the two signals diverge into opposing trends.
+3. **Synchronized** — the signals reconverge and the mutual-resonance curve rises.
+
 ---
 
 ## 02 | Visual State Contrast
 
 Higher-order states progress from **Monochrome Convergence → Dual-Color Convergence → Multicolor Interweaving → Open Dispersion**, with particles alternating between *Approach* and *Compact / Dispersed* configurations.
+
+### Particle State Test Ladder
+
+The visualization deck validates the particle engine through a three-row state ladder, where each cell pairs a mental-state label with its visual signature:
+
+**Row 1 — activation and shape**
+- Thinking flattening → Particles converging
+- Attention focusing
+- Particles diffusing
+- Thinking activating → New colors appearing
+
+**Row 2 — emotion / resonance decay and rise**
+- Emotion weakening → Two colors fading
+- Resonance weakening → Particles separating
+- A's emotion weakening → Red fading
+- B's emotion weakening → Blue fading
+- A's thinking dominating → Cool colors expanding
+- Resonance enhancing → Multiple colors converging
+
+**Row 3 — minimum, dislocation, and expansion**
+- Emotion reaching minimum → Two colors disappearing
+- Resonance reaching minimum → Colors disappearing
+- A's emotion dislocating → Red disappearing
+- B's emotion dislocating → Blue disappearing
+- B's thinking dominating → Warm colors expanding
+- Attention diffusing → Multiple colors interweaving
+
+The central particle visual in the deck is based on *"hyper-mix"* by edankwan.
 
 ![Page 4 — Visualization: Between Two Minds & State Contrast](docs/04_visualization.jpeg)
 
@@ -248,6 +361,25 @@ The full system is deployed as a two-performer ensemble: both musicians wear Ope
 ### Running the Full Pipeline
 
 The output `generated_csv/full_performance.csv` feeds the real-time particle renderer via LSL, producing the live visual score.
+
+### Stage Performance Sequence
+
+**1. Before Performance.** Each performer puts on the EEG headset and connects it to the processor and screen. The system first acquires background baseline signals for the relaxed state and the eye-blinking state.
+
+**2. Individual States.** The performance is divided into four musical sections, each profiled with a waveform trace, a scalp topographic heatmap, a performer photograph, and a corresponding particle snapshot:
+
+| Section | State |
+|---|---|
+| Section A | Meditative |
+| Section B | Playful |
+| Section C | Lyrical |
+| Section D | Intense |
+
+**3. Between Performers.** Brain A represents the Human Performer (e.g., guitar), while Brain B represents the AI Signal (e.g., keyboard). Performers adjust their playing state by observing the real-time particle motion on the screen in front of them.
+
+**4. Audience Experience.** A stage dashboard reports, for each performer, Theta, Alpha, Beta (low), Beta (high), Thinking, Emotion, and Immersion levels, together with a shared **Resonance** value. The audience watches how the performers' emotions shift along with the music sections; data collected from the performance can be reused for subsequent AI training.
+
+**Timeline section color legend:** Playful Section (pink), Meditative Section (cyan), Intense Section (red), Lyrical Section (blue), Setting-up (gray).
 
 ---
 
@@ -281,5 +413,3 @@ Next steps:
 
 **Li Ruichen** — Hunan University
 Project 01 · 2026
-
-*Brain · Sound · Particle · Human*
